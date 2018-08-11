@@ -362,6 +362,28 @@ void sfmt_init_gen_rand(sfmt_t * sfmt, uint32_t seed) {
 }
 
 /**
+ * This function initializes the internal state array with a 64-bit
+ * integer seed.
+ *
+ * @param sfmt SFMT internal state
+ * @param seed a 64-bit integer used as the seed.
+ */
+void sfmt_init_gen_rand64(sfmt_t * sfmt, uint64_t seed) {
+    int i;
+
+    uint64_t *psfmt64 = &sfmt->state[0].u64[0];
+
+    psfmt64[idxof(0)] = seed;
+    for (i = 1; i < SFMT_N64; i++) {
+        psfmt64[idxof(i)] = 1812433253UL * (psfmt64[idxof(i - 1)]
+                                            ^ (psfmt64[idxof(i - 1)] >> 62))
+            + i;
+    }
+    sfmt->idx = SFMT_N64;
+    period_certification(sfmt);
+}
+
+/**
  * This function initializes the internal state array,
  * with an array of 32-bit integers used as the seeds
  * @param sfmt SFMT internal state
